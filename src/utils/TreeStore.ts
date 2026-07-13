@@ -7,9 +7,9 @@ export interface TreeNode {
 }
 
 export class TreeStore<T extends TreeNode> {
-  private items: T[] = [];
-  private itemsById: Map<NodeId, T> = new Map();
-  private childrenById: Map<NodeId | null, Set<NodeId>> = new Map();
+  items: T[] = [];
+  itemsById: Map<NodeId, T> = new Map();
+  childrenById: Map<NodeId | null, Set<NodeId>> = new Map();
 
   constructor(items: T[]) {
     for (const item of items) this.addItem(item);
