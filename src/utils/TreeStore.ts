@@ -88,4 +88,29 @@ export class TreeStore<T extends TreeNode> {
 
     return result;
   }
+
+  updateItem(item: T) {
+    const oldItem = this.itemsById.get(item.id);
+    if (!oldItem) {
+      throw new Error('Айтем не нашелся');
+    }
+
+    if (oldItem.parent !== item.parent) {
+      const oldSet = this.childrenById.get(oldItem.parent);
+      oldSet?.delete(item.id);
+
+      let newSet = this.childrenById.get(item.parent);
+
+      if (!newSet) {
+        newSet = new Set();
+        this.childrenById.set(item.parent, newSet);
+      }
+
+      newSet.add(item.id);
+    }
+
+    this.itemsById.set(item.id, item);
+    const idx = this.items.findIndex((idx) => idx.id === item.id);
+    this.items[idx] = item;
+  }
 }
