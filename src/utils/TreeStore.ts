@@ -32,4 +32,60 @@ export class TreeStore<T extends TreeNode> {
 
     set.add(item.id);
   }
+
+  getAll() {
+    return this.items;
+  }
+
+  getItem(id: TreeNode['id']): T | undefined {
+    return this.itemsById.get(id);
+  }
+
+  getChildren(id: TreeNode['id']) {
+    const ids = this.childrenById.get(id);
+    if (!ids) return [];
+
+    const result: T[] = [];
+
+    for (const childId of ids) {
+      const item = this.itemsById.get(childId);
+      if (item) result.push(item);
+    }
+
+    return result;
+  }
+
+  getAllChildren(id: TreeNode['id']): T[] {
+    const result: T[] = [];
+    const stack: NodeId[] = [];
+    const first = this.childrenById.get(id);
+
+    if (first) stack.push(...first);
+
+    while (stack.length) {
+      const currentId = stack.pop()!;
+      const item = this.itemsById.get(currentId);
+      if (!item) continue;
+
+      result.push(item);
+      const children = this.childrenById.get(currentId);
+      if (children) stack.push(...children);
+    }
+
+    return result;
+  }
+
+  getAllParents(id: TreeNode['id']): T[] {
+    const result: T[] = [];
+    let current = this.itemsById.get(id);
+
+    while (current) {
+      result.push(current);
+      if (current.parent === null) break;
+
+      current = this.itemsById.get(current.parent);
+    }
+
+    return result;
+  }
 }
