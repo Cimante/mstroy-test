@@ -4,13 +4,10 @@ import { ClientSideRowModelModule, ModuleRegistry } from 'ag-grid-community';
 import type { ColDef, GridOptions } from 'ag-grid-community';
 import { TreeDataModule } from 'ag-grid-enterprise';
 import { TreeStore } from '@/utils/TreeStore';
-import type { TreeNode } from '@/utils/TreeStore';
+import { toGridRows } from '@/utils/toGridRows';
+import type { GridRow } from '@/utils/toGridRows';
 
 ModuleRegistry.registerModules([ClientSideRowModelModule, TreeDataModule]);
-
-type GridRow = TreeNode & {
-  category: 'Группа' | 'Элемент';
-};
 
 const gridOptions: GridOptions<GridRow> = {
   treeData: true,
@@ -46,27 +43,6 @@ const store = new TreeStore([
   { id: 7, parent: 4, label: 'Айтем 7' },
   { id: 8, parent: 4, label: 'Айтем 8' }
 ]);
-
-function toGridRows(store: TreeStore<TreeNode>): GridRow[] {
-  const result: GridRow[] = [];
-  let order = 1;
-
-  function step(item: TreeNode) {
-    result.push({
-      ...item,
-      order: order++,
-      category: store.getChildren(item.id).length > 0 ? 'Группа' : 'Элемент'
-    });
-
-    for (const child of store.getChildren(item.id)) step(child);
-  }
-
-  const roots = store.getAll().filter((item) => item.parent === null);
-
-  for (const root of roots) step(root);
-
-  return result;
-}
 
 const rowData = toGridRows(store);
 </script>
