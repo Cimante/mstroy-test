@@ -113,4 +113,29 @@ export class TreeStore<T extends TreeNode> {
     const idx = this.items.findIndex((idx) => idx.id === item.id);
     this.items[idx] = item;
   }
+
+  removeItem(id: TreeNode['id']) {
+    const deleteQueue: TreeNode['id'][] = [id];
+
+    let index = 0;
+
+    while (index < deleteQueue.length) {
+      const currentId = deleteQueue[index++];
+      const children = this.childrenById.get(currentId);
+      if (children) deleteQueue.push(...children);
+    }
+
+    const removeSet = new Set(deleteQueue);
+
+    for (const curr of deleteQueue) {
+      const item = this.itemsById.get(curr);
+      if (!item) continue;
+
+      this.itemsById.delete(curr);
+      this.childrenById.delete(curr);
+      this.childrenById.get(item.parent)?.delete(curr);
+    }
+
+    this.items = this.items.filter((item) => !removeSet.has(item.id));
+  }
 }
