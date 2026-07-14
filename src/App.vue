@@ -8,6 +8,7 @@ import { TreeStore } from '@/utils/TreeStore';
 import type { TreeNode } from '@/utils/TreeStore';
 import { toGridRows } from '@/utils/toGridRows';
 import type { GridRow } from '@/utils/toGridRows';
+import AddItem from '@/components/AddItem.vue';
 
 ModuleRegistry.registerModules([ClientSideRowModelModule, TreeDataModule]);
 
@@ -49,10 +50,19 @@ const items: TreeNode[] = [
 
 const store = reactive(new TreeStore(items));
 const rowData = computed(() => toGridRows(store));
+
+function addItemHandler(state: TreeNode) {
+  try {
+    store.addItem(state);
+  } catch (err) {
+    alert(err);
+  }
+}
 </script>
 
 <template>
   <section style="height: 90vh">
+    <AddItem @addItem="addItemHandler" />
     <ag-grid-vue
       style="width: 100%; height: 100%"
       :grid-options="gridOptions"
