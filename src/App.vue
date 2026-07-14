@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { reactive, computed } from 'vue';
 import { AgGridVue } from 'ag-grid-vue3';
 import { ClientSideRowModelModule, ModuleRegistry } from 'ag-grid-community';
 import type { ColDef, GridOptions } from 'ag-grid-community';
 import { TreeDataModule } from 'ag-grid-enterprise';
 import { TreeStore } from '@/utils/TreeStore';
+import type { TreeNode } from '@/utils/TreeStore';
 import { toGridRows } from '@/utils/toGridRows';
 import type { GridRow } from '@/utils/toGridRows';
 
@@ -33,7 +35,8 @@ const columnDefs: ColDef<GridRow>[] = [
     field: 'label'
   }
 ];
-const store = new TreeStore([
+
+const items: TreeNode[] = [
   { id: 1, parent: null, label: 'Айтем 1' },
   { id: '91064cee', parent: 1, label: 'Айтем 2' },
   { id: 3, parent: 1, label: 'Айтем 3' },
@@ -42,9 +45,10 @@ const store = new TreeStore([
   { id: 6, parent: '91064cee', label: 'Айтем 4' },
   { id: 7, parent: 4, label: 'Айтем 7' },
   { id: 8, parent: 4, label: 'Айтем 8' }
-]);
+];
 
-const rowData = toGridRows(store);
+const store = reactive(new TreeStore(items));
+const rowData = computed(() => toGridRows(store));
 </script>
 
 <template>
